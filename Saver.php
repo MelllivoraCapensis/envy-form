@@ -3,6 +3,8 @@ require_once('config.php');
 require_once('Storage.php');
 require_once('ValidationException.php');
 
+// abstract fabric
+
 abstract class SaverFactory {
 
 	const STORAGE_TYPES = [
@@ -12,7 +14,11 @@ abstract class SaverFactory {
 		'json',
 	];
 
+	// generate product instance - interface Storage
+
 	abstract function getStorage(): Storage;
+
+	// generate concrete fabric depending of storage type
 
 	static public function getSaver($storage_type): SaverFactory {
 		if(! in_array('database', self::STORAGE_TYPES)) {
@@ -25,6 +31,8 @@ abstract class SaverFactory {
 	}
 
 	abstract public function setPath($file_path);
+
+	// create file with dirs if it doesnot exist
 
 	static public function createFileIfNotExist($file_path) {
 
@@ -40,6 +48,8 @@ abstract class SaverFactory {
 		
 		touch(Config::DATAFILE_BASE_DIR . $folder_name . '/' . $file_name);
 	}
+
+	// validate and return clean data or throw validate exception
 
 	public function getCleanedRequest($request): array {
 
@@ -68,11 +78,15 @@ abstract class SaverFactory {
 
 	}
 
+	// save data to any allowed storage
+
 	public function save($request): void {
 		$cleaned_request = $this->getCleanedRequest($request);
 		$this->getStorage()->add($cleaned_request);
 	}
 }
+
+// concrete fabric for database storage
 
 class DatabaseSaver extends SaverFactory {
 
@@ -80,10 +94,14 @@ class DatabaseSaver extends SaverFactory {
 		return new DatabaseStorage();
 	}
 
+	// it doesnot need to specify filepath
+
 	public function setPath($file_path = NULL) {		
 		return $this;
 	}
 }
+
+// helping abstract class for implementation setPath method
 
 abstract class FileSaver extends SaverFactory {
 	protected $file_path;
@@ -97,9 +115,13 @@ abstract class FileSaver extends SaverFactory {
 
 class TxtSaver extends FileSaver {
 
+	// sets default file path for storage
+
 	public function __construct() {
 		$this->setPath('txt/requests.txt');
 	}
+
+	// genereates implementation of Storage interface - TxtStorage
 
 	public function getStorage(): Storage {
 		return new TxtStorage($this->file_path);

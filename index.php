@@ -38,9 +38,13 @@ function index_controller() {
 	http_response_code(403);
 }
 
+//render template with data
+
 function render($template, $data = []) {
 	include $template;
 }
+
+//making json response
 
 function json_response($body, $status = 200) {
 	header('Content-Type: Application/json');

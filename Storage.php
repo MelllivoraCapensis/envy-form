@@ -1,9 +1,13 @@
 <?php
 require_once('config.php');
 
+//base interface of fabric product
+
 interface Storage {
 	public function add($cleaned_request);
 }
+
+//implementation for database type
 
 class DatabaseStorage implements Storage {
 	private $connection;
@@ -18,6 +22,8 @@ class DatabaseStorage implements Storage {
 		$q = $this->connection->prepare($query)->execute($cleaned_request);
 	}
 }
+
+// implementations for file types of storage
 
 abstract class FileStorage implements Storage {
 	protected $file_path;
