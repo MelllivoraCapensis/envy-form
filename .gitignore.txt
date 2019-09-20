@@ -1,4 +1,0 @@
-.phpintel
-data
-test.php
-
